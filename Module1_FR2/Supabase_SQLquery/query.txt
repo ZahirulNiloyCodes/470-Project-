@@ -1,0 +1,16 @@
+/*
+CREATE TABLE public.canvas_records (
+    room_id uuid NOT NULL,
+    record_id text NOT NULL,
+    record jsonb NOT NULL,
+    updated_at timestamptz NOT NULL DEFAULT now(),
+
+    CONSTRAINT canvas_records_pkey
+        PRIMARY KEY (room_id, record_id),
+
+    CONSTRAINT canvas_records_room_id_fkey
+        FOREIGN KEY (room_id)
+        REFERENCES public.study_rooms(id)
+        ON DELETE CASCADE
+); 
+*/
