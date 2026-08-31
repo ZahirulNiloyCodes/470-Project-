@@ -52,82 +52,92 @@ export default function DemoPage() {
   };
 
   return (
-    <div className="container mx-auto p-8 space-y-10 max-w-5xl">
-      <div className="flex justify-between items-center border-b pb-4">
-        <div>
-          <h1 className="text-3xl font-bold">EduStream Member 1 Workspace</h1>
-          <p className="text-sm text-muted-foreground">FR1 (Rooms), FR5 (Pomodoro), FR9 (AI Flashcards)</p>
+    <main className="min-h-screen bg-slate-50 py-10 px-4">
+      <div className="container mx-auto max-w-5xl space-y-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">EduStream Member 1 Workspace</h1>
+            <p className="text-sm text-slate-500">FR1 (Rooms), FR5 (Pomodoro), FR9 (AI Flashcards)</p>
+          </div>
+          <CreateRoomModal onCreated={fetchRooms} />
         </div>
-        <CreateRoomModal onCreated={fetchRooms} />
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>FR1: Active Study Rooms</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {rooms.length === 0 ? (
+                <p className="text-sm text-slate-500 py-4 text-center">No active study rooms yet. Create one to get started.</p>
+              ) : (
+                rooms.map((r) => (
+                  <div
+                    key={r.id}
+                    onClick={() => setSelectedRoom(r.id)}
+                    className={`p-3.5 rounded-lg border cursor-pointer transition ${
+                      selectedRoom === r.id ? "border-blue-600 bg-blue-50/50" : "border-slate-200 bg-slate-50/50 hover:bg-slate-100/60"
+                    }`}
+                  >
+                    <div className="flex justify-between items-center">
+                      <h3 className="font-semibold text-slate-900">{r.title}</h3>
+                      <div className="flex gap-1.5">
+                        {r.tags?.map((t: string) => (
+                          <Badge key={t} variant="secondary" className="text-xs bg-slate-200 text-slate-800">{t}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-xs text-slate-600 mt-1">{r.description || "No description provided."}</p>
+                  </div>
+                ))
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="flex flex-col justify-between">
+            <CardHeader>
+              <CardTitle>FR5: Synchronized Pomodoro</CardTitle>
+            </CardHeader>
+            <CardContent className="py-6">
+              <SharedPomodoro roomId={selectedRoom} isHost={true} />
+            </CardContent>
+          </Card>
+        </div>
+
         <Card>
           <CardHeader>
-            <CardTitle>FR1: Active Study Rooms</CardTitle>
+            <CardTitle>FR9: AI Flashcard Generator</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
-            {rooms.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No rooms found. Click 'Create Study Room' above.</p>
-            ) : (
-              rooms.map((r) => (
-                <div
-                  key={r.id}
-                  onClick={() => setSelectedRoom(r.id)}
-                  className={`p-3 rounded-lg border cursor-pointer transition ${
-                    selectedRoom === r.id ? "border-blue-500 bg-blue-50/20" : ""
-                  }`}
-                >
-                  <div className="flex justify-between items-center">
-                    <h3 className="font-semibold">{r.title}</h3>
-                    <div className="flex gap-1">
-                      {r.tags?.map((t: string) => (
-                        <Badge key={t} variant="secondary" className="text-xs">{t}</Badge>
-                      ))}
-                    </div>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">{r.description || "No description."}</p>
-                </div>
-              ))
+          <CardContent className="space-y-4">
+            <div>
+              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1 block">Deck Title</label>
+              <Input
+                value={deckTitle}
+                onChange={(e) => setDeckTitle(e.target.value)}
+                placeholder="e.g., Operating Systems Unit 1"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1 block">Study Notes</label>
+              <Textarea
+                rows={4}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Paste revision notes or lecture summaries here..."
+              />
+            </div>
+            <Button onClick={handleGenerateFlashcards} disabled={isGenerating} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold">
+              {isGenerating ? "Generating Flashcards..." : "Generate Flashcards with AI"}
+            </Button>
+
+            {cards.length > 0 && (
+              <div className="pt-6 border-t border-slate-200">
+                <FlashcardDeck cards={cards} />
+              </div>
             )}
           </CardContent>
         </Card>
-
-        <Card className="flex flex-col items-center justify-center p-6">
-          <CardHeader className="p-0 mb-4">
-            <CardTitle className="text-center">FR5: Synchronized Pomodoro</CardTitle>
-          </CardHeader>
-          <SharedPomodoro roomId={selectedRoom} isHost={true} />
-        </Card>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>FR9: AI Flashcard Generator</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Input
-            value={deckTitle}
-            onChange={(e) => setDeckTitle(e.target.value)}
-            placeholder="Deck Title"
-          />
-          <Textarea
-            rows={4}
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="Paste your study notes here..."
-          />
-          <Button onClick={handleGenerateFlashcards} disabled={isGenerating}>
-            {isGenerating ? "Generating Flashcards..." : "Generate Flashcards with AI"}
-          </Button>
-
-          {cards.length > 0 && (
-            <div className="pt-4 border-t">
-              <FlashcardDeck cards={cards} />
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+    </main>
   );
 }
