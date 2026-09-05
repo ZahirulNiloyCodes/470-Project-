@@ -196,3 +196,19 @@ class PeerRatingModel:
 # Module instance alias
 peer_rating_model = PeerRatingModel()
 
+
+# Compatibility helpers for Member 2
+def upsert_rating(rater_id: str, ratee_id: str, score: int) -> Dict[str, Any]:
+    return PeerRatingModel.create_or_update_rating({
+        "room_id": "general",
+        "rater_id": rater_id,
+        "ratee_id": ratee_id,
+        "rating": score,
+    })
+
+
+def get_average_score(ratee_id: str) -> float:
+    ratings = PeerRatingModel.get_ratings_for_user(ratee_id)
+    if not ratings:
+        return 0.0
+    return sum(int(r.get("rating", r.get("score", 0))) for r in ratings) / len(ratings)

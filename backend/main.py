@@ -8,11 +8,15 @@ from routers.pomodoro_router import router as pomodoro_router
 from routers.flashcard_router import router as flashcard_router
 from routers.peer_rating_router import router as peer_rating_router
 
-# member2
+# member2 (collaboration)
 from routers import canvas_router
 from routers import chat_router
 from routers import qna_router
 from routers import screenshare_router
+
+# member2 (authentication & users)
+from routers import auth_router
+from routers import user_router
 
 
 app = FastAPI(title="EduStream Collaborative API")
@@ -33,17 +37,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# member1
+# member1 routes
 app.include_router(room_router)
 app.include_router(pomodoro_router)
 app.include_router(flashcard_router)
 app.include_router(peer_rating_router)
 
-# member2
+# member2 collaboration routes
 app.include_router(canvas_router.router)
 app.include_router(chat_router.router)
 app.include_router(qna_router.router)
 app.include_router(screenshare_router.router)
+
+# member2 authentication routes
+app.include_router(auth_router.router)
+app.include_router(user_router.router)
 
 
 @app.get("/")
