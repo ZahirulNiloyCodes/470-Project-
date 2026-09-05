@@ -5,7 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Play, Pause, RotateCcw } from "lucide-react";
 
-export default function SharedPomodoro({ roomId, isHost }: { roomId: string; isHost: boolean }) {
+export default function SharedPomodoro({
+  roomId,
+  isHost,
+  onSessionFinished,
+}: {
+  roomId: string;
+  isHost: boolean;
+  onSessionFinished?: () => void;
+}) {
   const [seconds, setSeconds] = useState(25 * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [mode, setMode] = useState("WORK");
@@ -21,11 +29,14 @@ export default function SharedPomodoro({ roomId, isHost }: { roomId: string; isH
         setSeconds(msg.data.remaining_seconds);
         setIsRunning(msg.data.is_running);
         setMode(msg.data.mode);
+      } else if (msg.type === "FINISHED") {
+        setIsRunning(false);
+        onSessionFinished?.();
       }
     };
 
     return () => ws.current?.close();
-  }, [roomId]);
+  }, [roomId, onSessionFinished]);
 
   const sendAction = (action: string, payload = {}) => {
     if (ws.current?.readyState === WebSocket.OPEN) {

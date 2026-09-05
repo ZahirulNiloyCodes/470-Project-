@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from routers.room_router import router as room_router
 from routers.pomodoro_router import router as pomodoro_router
 from routers.flashcard_router import router as flashcard_router
+from routers.peer_rating_router import router as peer_rating_router
 
 # member2
 from routers import canvas_router
@@ -30,6 +31,7 @@ app.add_middleware(
 app.include_router(room_router)
 app.include_router(pomodoro_router)
 app.include_router(flashcard_router)
+app.include_router(peer_rating_router)
 
 # member2
 app.include_router(canvas_router.router)

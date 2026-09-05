@@ -12,6 +12,7 @@ The architecture is built on a **FastAPI (Python)** REST & WebSocket backend, a 
 * **FR1: Study Room Lifecycle Management** — Dynamic creation, room access validation (public or private with access codes), academic subject tag filtering, and active room listings.
 * **FR5: Synchronized Pomodoro Clock** — Real-time bidirectional WebSocket timer synchronization across all connected room participants with host management (`START`, `PAUSE`, `RESET`).
 * **FR9: AI-Driven Flashcard Generator** — Automatic extraction and summarization of study notes into structured, interactive double-sided flip cards.
+* **FR13: Peer Rating System** — Post-study-session peer helpfulness evaluation, interactive 1–5 star scoring, qualitative feedback remarks, self-rating prevention, and user reputation metrics.
 
 ---
 

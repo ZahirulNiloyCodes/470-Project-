@@ -49,10 +49,26 @@ create table if not exists public.flashcard_decks (
     created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
+-- Peer Ratings (FR13)
+create table if not exists public.peer_ratings (
+    id uuid primary key default uuid_generate_v4(),
+    room_id text not null,
+    rater_id text not null,
+    ratee_id text not null,
+    rating int not null check (rating >= 1 and rating <= 5),
+    feedback text,
+    created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+    updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
+    constraint no_self_rating check (rater_id != ratee_id),
+    constraint unique_rater_ratee_room unique (room_id, rater_id, ratee_id)
+);
+
 alter table public.study_rooms enable row level security;
 alter table public.flashcard_decks enable row level security;
+alter table public.peer_ratings enable row level security;
 create policy "Allow all study_rooms" on public.study_rooms for all using (true) with check (true);
 create policy "Allow all flashcard_decks" on public.flashcard_decks for all using (true) with check (true);
+create policy "Allow all peer_ratings" on public.peer_ratings for all using (true) with check (true);
 </pre>
 
 <h2>2. Backend Setup & Run (Terminal 1)</h2>
@@ -119,6 +135,11 @@ npm run dev
     <td><strong>FR9: Flashcards</strong></td>
     <td>Paste text notes & click <em>"Generate Flashcards with AI"</em>.</td>
     <td>Interactive flip card deck renders with Next/Prev controls.</td>
+  </tr>
+  <tr>
+    <td><strong>FR13: Peer Rating System</strong></td>
+    <td>Click <em>"Rate Session Peers"</em> or trigger session completion; select 1–5 stars and feedback for session participants.</td>
+    <td>Helpfulness rating is submitted, self-rating is prevented, and real-time reputation score card updates immediately.</td>
   </tr>
 </table>
 
