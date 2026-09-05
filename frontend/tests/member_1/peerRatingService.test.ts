@@ -1,5 +1,5 @@
 ﻿import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { peerRatingService } from "./peerRatingService";
+import { peerRatingService } from "@/services/peerRatingService";
 
 describe("peerRatingService", () => {
   beforeEach(() => {

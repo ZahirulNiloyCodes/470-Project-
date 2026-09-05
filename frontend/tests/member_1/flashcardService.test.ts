@@ -1,5 +1,5 @@
 ﻿import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { flashcardService } from "./flashcardService";
+import { flashcardService } from "@/services/flashcardService";
 
 describe("flashcardService", () => {
   beforeEach(() => {

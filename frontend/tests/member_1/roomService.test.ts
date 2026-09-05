@@ -1,5 +1,5 @@
 ﻿import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { roomService, getDevUserId } from "./roomService";
+import { roomService, getDevUserId } from "@/services/roomService";
 
 describe("roomService", () => {
   beforeEach(() => {
