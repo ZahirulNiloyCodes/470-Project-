@@ -6,6 +6,28 @@ The architecture is built on a **FastAPI (Python)** REST & WebSocket backend, a 
 
 ---
 
+## ⚡ 1-Click Run Guide (No Terminal Commands Required!)
+
+You can run the entire platform directly from your cloned Git folder without typing commands in the terminal:
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/ZahirulNiloyCodes/470-Project-.git
+   ```
+2. **Double-Click `run.bat`** (or **`start.bat`**) in Windows File Explorer.
+   - It automatically verifies/creates the Python virtual environment.
+   - It automatically verifies/installs all dependencies.
+   - It automatically launches the **FastAPI backend** (`:8000`) and **Next.js frontend** (`:3000`).
+   - It automatically opens **http://localhost:3000/demo** in your default web browser!
+
+3. **To Run All Unit Tests**:
+   - Double-click **`run_tests.bat`** to execute all 38 backend and 11 frontend unit tests.
+
+4. **To Stop the App**:
+   - Double-click **`stop.bat`** to cleanly shut down both servers.
+
+---
+
 ## 📌 Features Breakdown
 
 ### 🏛️ Member 1 Modules

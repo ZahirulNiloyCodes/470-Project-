@@ -41,7 +41,18 @@ git clone https://github.com/ZahirulNiloyCodes/470-Project-.git
 cd 470-Project-
 </pre>
 
-<h2>2. Database Initialization (Supabase SQL)</h2>
+<div style="background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: white; padding: 20px; border-radius: 10px; margin: 20px 0;">
+  <h3 style="color: white; margin-top: 0; font-size: 18px;">⚡ 1-Click Instant Launch (No Terminal Needed!)</h3>
+  <p style="margin: 6px 0; font-size: 13.5px;">You don't need to type terminal commands! Simply double-click the launcher script in Windows File Explorer:</p>
+  <ul style="margin: 8px 0 12px 20px; padding: 0;">
+    <li><strong><code>run.bat</code></strong> (or <strong><code>start.bat</code></strong>): Automatically creates virtual environment, verifies dependencies, starts both FastAPI backend and Next.js frontend, and launches <strong>http://localhost:3000/demo</strong> in your browser!</li>
+    <li><strong><code>run_tests.bat</code></strong>: Double-click to execute all 38 backend and 11 frontend unit tests.</li>
+    <li><strong><code>stop.bat</code></strong>: Double-click to cleanly terminate all background servers when finished.</li>
+  </ul>
+  <p style="margin: 0; font-size: 12px; opacity: 0.9;"><em>Note: The app comes with resilient built-in in-memory fallback stores and sample rooms & ratings, meaning it works 100% offline out-of-the-box even without Supabase credentials.</em></p>
+</div>
+
+<h2>2. Database Initialization (Optional - For Live Supabase Cloud Sync)</h2>
 <p>Open your <strong>Supabase Project Dashboard</strong> &rarr; <strong>SQL Editor</strong> &rarr; <strong>New Query</strong>, paste the following SQL, and click <strong>Run</strong>:</p>
 <pre>
 create extension if not exists "uuid-ossp";
