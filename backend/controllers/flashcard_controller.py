@@ -27,10 +27,28 @@ class FlashcardController:
             raw_content = json.loads(response.choices[0].message.content)
             cards = raw_content.get("cards", [])
         except Exception:
-            cards = [
-                {"question": "What is the primary topic of the notes?", "answer": data.title},
-                {"question": "Key Summary", "answer": data.study_notes[:100] + "..."}
-            ]
+            cards = []
+            lines = [line.strip("-*# \t\r\n") for line in data.study_notes.split("\n") if len(line.strip()) > 10]
+            for i, line in enumerate(lines[:data.num_cards]):
+                if ":" in line:
+                    parts = line.split(":", 1)
+                    cards.append({"question": f"What is {parts[0].strip()}?", "answer": parts[1].strip()})
+                elif " - " in line:
+                    parts = line.split(" - ", 1)
+                    cards.append({"question": f"Define {parts[0].strip()}", "answer": parts[1].strip()})
+                else:
+                    cards.append({"question": f"Key takeaway #{i+1} from {data.title}:", "answer": line})
+
+            if not cards:
+                cards = [
+                    {"question": f"What is the primary focus of {data.title}?", "answer": data.title},
+                    {"question": "Core Study Summary", "answer": data.study_notes[:180] + ("..." if len(data.study_notes) > 180 else "")}
+                ]
+            while len(cards) < min(data.num_cards, 4) and len(cards) < 4:
+                cards.append({
+                    "question": f"Concept Check #{len(cards)+1}: {data.title}",
+                    "answer": f"Key principle extracted from session notes: {data.study_notes[:100]}..."
+                })
 
         payload = {
             "user_id": user_id,
