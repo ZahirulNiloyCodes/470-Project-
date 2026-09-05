@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -144,17 +144,17 @@ npm run dev
 </pre>
 <p><strong>Verification:</strong> Open <code>http://localhost:3000/demo</code> in your browser to view the integrated Member 1 testbed.</p>
 
-<h2>5. Running Unit & Integration Tests</h2>
-<p>To verify that all Member 1 modules and test suites pass:</p>
+<h2>5. Running Unit & Integration Tests (Member 1)</h2>
+<p>All Member 1 unit and integration tests are organized inside dedicated <code>member_1</code> test directories:</p>
 <pre>
-# --- Backend Pytest Suite ---
+# --- Backend Pytest Suite (38 tests) ---
 cd backend
 .\venv\Scripts\Activate.ps1
-pytest tests/unit/test_peer_rating_controller.py tests/unit/test_peer_rating_model.py tests/integration/test_peer_rating_router.py
+pytest tests/member_1
 
-# --- Frontend Vitest Suite ---
+# --- Frontend Vitest Suite (11 tests) ---
 cd frontend
-npm test -- services/peerRatingService.test.ts --run
+npm test -- tests/member_1 --run
 </pre>
 
 <h2>6. Feature Testing Walkthrough</h2>
