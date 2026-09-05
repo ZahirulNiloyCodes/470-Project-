@@ -53,7 +53,7 @@ export default function ChatBox({ roomId, currentUserId, currentUsername }: Chat
   }, [roomId]);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    bottomRef.current?.scrollIntoView?.({ behavior: "smooth" });
   }, [messages.length]);
 
   const handleSubmit = () => {

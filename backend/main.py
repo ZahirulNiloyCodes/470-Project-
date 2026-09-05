@@ -18,6 +18,12 @@ from routers import screenshare_router
 from routers import auth_router
 from routers import user_router
 
+# member3 (FR3 Global Search, FR7 Kanban Tasks, FR11 Resource Hub, FR15 Study Logs)
+from controllers.room_search_controller import router as room_search_router
+from controllers.task_controller import router as task_router
+from controllers.study_log_controller import router as study_log_router
+from controllers.resource_controller import router as resource_router
+
 
 app = FastAPI(title="EduStream Collaborative API")
 
@@ -52,6 +58,12 @@ app.include_router(screenshare_router.router)
 # member2 authentication routes
 app.include_router(auth_router.router)
 app.include_router(user_router.router)
+
+# member3 routes
+app.include_router(room_search_router)
+app.include_router(task_router)
+app.include_router(study_log_router)
+app.include_router(resource_router)
 
 
 @app.get("/")

@@ -1,23 +1,26 @@
-from pydantic import BaseModel, EmailStr, Field
+import re
+from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
+
+EMAIL_REGEX = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
 
 
 class RegisterRequest(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
-    email: EmailStr
+    email: str = Field(..., pattern=EMAIL_REGEX)
     password: str = Field(..., min_length=8, max_length=100)
 
 
 class LoginRequest(BaseModel):
-    email: EmailStr
+    email: str = Field(..., pattern=EMAIL_REGEX)
     password: str
 
 
 class UserOut(BaseModel):
     id: str
     name: str
-    email: EmailStr
+    email: str
     role: str
     peer_reputation_score: float
     created_at: datetime

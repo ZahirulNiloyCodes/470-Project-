@@ -61,6 +61,8 @@ class FakeSupabaseQuery:
         if self._insert_payload is not None:
             new_row = dict(self._insert_payload)
             new_row.setdefault("id", str(uuid.uuid4()))
+            new_row.setdefault("role", "student")
+            new_row.setdefault("peer_reputation_score", 0)
             new_row.setdefault("is_edited", False)
             new_row.setdefault("is_deleted", False)
             new_row.setdefault("status", "pending")
@@ -121,12 +123,14 @@ class FakeSupabaseClient:
         return FakeSupabaseQuery(self._data_store, name, self)
 
     def rpc(self, function_name, params):
+        mock_res = MagicMock()
         if function_name == "get_question_queue_position":
             question_id = params["p_question_id"]
             rows = self._data_store.get("anonymous_questions", [])
             target = next((r for r in rows if r["id"] == question_id), None)
             if target is None:
-                return MagicMock(data=None)
+                mock_res.execute.return_value = MagicMock(data=None)
+                return mock_res
 
             count = sum(
                 1
@@ -135,9 +139,11 @@ class FakeSupabaseClient:
                 and r["status"] == "pending"
                 and r["created_at"] < target["created_at"]
             )
-            return MagicMock(data=count + 1)
+            mock_res.execute.return_value = MagicMock(data=count + 1)
+            return mock_res
 
-        return MagicMock(data=None)
+        mock_res.execute.return_value = MagicMock(data=None)
+        return mock_res
 
 
 @pytest.fixture

@@ -32,8 +32,11 @@ class QnAConnectionManager:
             conns.remove(websocket)
 
     async def broadcast_to_host(self, room_id: str, message: dict) -> None:
-        for conn in self.host_connections.get(room_id, []):
-            await conn.send_json(message)
+        for conn in list(self.host_connections.get(room_id, [])):
+            try:
+                await conn.send_json(message)
+            except Exception:
+                self.disconnect_host(room_id, conn)
 
     async def broadcast_to_participants(self, room_id: str, message: dict) -> None:
         # participant_id anonymize করে পাঠানো
@@ -43,8 +46,11 @@ class QnAConnectionManager:
             safe_question.pop("participant_id", None)
             safe_message["question"] = safe_question
 
-        for conn in self.participant_connections.get(room_id, []):
-            await conn.send_json(safe_message)
+        for conn in list(self.participant_connections.get(room_id, [])):
+            try:
+                await conn.send_json(safe_message)
+            except Exception:
+                self.disconnect_participant(room_id, conn)
 
     async def broadcast_all(self, room_id: str, message: dict) -> None:
         await self.broadcast_to_host(room_id, message)

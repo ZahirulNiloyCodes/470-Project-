@@ -8,7 +8,7 @@ QuestionStatus = Literal["pending", "answered", "dismissed"]
 class QuestionCreate(BaseModel):
     room_id: str
     participant_id: Optional[str] = None
-    question: str = Field(..., min_length=3, max_length=2000)
+    question: str
 
 
 class QuestionAnswer(BaseModel):

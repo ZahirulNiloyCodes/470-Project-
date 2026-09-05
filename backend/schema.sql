@@ -50,18 +50,106 @@ CREATE TABLE IF NOT EXISTS peer_ratings (
     CONSTRAINT unique_room_rater_ratee UNIQUE (room_id, rater_id, ratee_id)
 );
 
--- Row Level Security (RLS) policies - Enable public access for local development
+-- 5. Member 2: Whiteboard Canvas Records
+CREATE TABLE IF NOT EXISTS canvas_records (
+    id TEXT PRIMARY KEY,
+    room_id TEXT NOT NULL,
+    record_id TEXT NOT NULL,
+    record_data JSONB NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    CONSTRAINT unique_room_record UNIQUE (room_id, record_id)
+);
+
+-- 6. Member 2: Chat Messages
+CREATE TABLE IF NOT EXISTS chat_messages (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    room_id TEXT NOT NULL,
+    user_id TEXT NOT NULL,
+    username TEXT NOT NULL,
+    content TEXT NOT NULL,
+    is_edited BOOLEAN DEFAULT FALSE,
+    is_deleted BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 7. Member 2: Anonymous Q&A Queue
+CREATE TABLE IF NOT EXISTS anonymous_questions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    room_id TEXT NOT NULL,
+    participant_id TEXT,
+    question TEXT NOT NULL,
+    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'answered', 'dismissed')),
+    answer TEXT,
+    answered_at TIMESTAMPTZ,
+    dismissed_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 8. Member 2: Screen Sharing Sessions
+CREATE TABLE IF NOT EXISTS screenshare_sessions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    room_id TEXT NOT NULL,
+    participant_id TEXT NOT NULL,
+    participant_name TEXT NOT NULL,
+    is_sharing BOOLEAN DEFAULT TRUE,
+    started_at TIMESTAMPTZ DEFAULT NOW(),
+    ended_at TIMESTAMPTZ
+);
+
+-- 9. Member 3: Kanban Tasks
+CREATE TABLE IF NOT EXISTS room_tasks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    room_id TEXT NOT NULL,
+    title TEXT NOT NULL,
+    status TEXT DEFAULT 'todo' CHECK (status IN ('todo', 'in_progress', 'done')),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 10. Member 3: Study Session Logs
+CREATE TABLE IF NOT EXISTS study_logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id TEXT NOT NULL,
+    duration INT NOT NULL,
+    session_date DATE NOT NULL,
+    notes TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 11. Member 3: Resource Hub
+CREATE TABLE IF NOT EXISTS room_resources (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    room_id TEXT NOT NULL,
+    user_id TEXT NOT NULL,
+    title TEXT NOT NULL,
+    resource_type TEXT NOT NULL CHECK (resource_type IN ('link', 'file')),
+    url TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Row Level Security (RLS) policies - Enable public access for development
 ALTER TABLE study_rooms ENABLE ROW LEVEL SECURITY;
 ALTER TABLE flashcard_decks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE peer_ratings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE canvas_records ENABLE ROW LEVEL SECURITY;
+ALTER TABLE chat_messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE anonymous_questions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE screenshare_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE room_tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE study_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE room_resources ENABLE ROW LEVEL SECURITY;
 
-DO $$ BEGIN
-    DROP POLICY IF EXISTS "Allow all for study_rooms" ON study_rooms;
-    CREATE POLICY "Allow all for study_rooms" ON study_rooms FOR ALL USING (true) WITH CHECK (true);
-    
-    DROP POLICY IF EXISTS "Allow all for flashcard_decks" ON flashcard_decks;
-    CREATE POLICY "Allow all for flashcard_decks" ON flashcard_decks FOR ALL USING (true) WITH CHECK (true);
-
-    DROP POLICY IF EXISTS "Allow all for peer_ratings" ON peer_ratings;
-    CREATE POLICY "Allow all for peer_ratings" ON peer_ratings FOR ALL USING (true) WITH CHECK (true);
+DO $$ 
+DECLARE
+    tbl TEXT;
+BEGIN
+    FOR tbl IN SELECT unnest(ARRAY[
+        'study_rooms', 'flashcard_decks', 'peer_ratings',
+        'canvas_records', 'chat_messages', 'anonymous_questions',
+        'screenshare_sessions', 'room_tasks', 'study_logs', 'room_resources'
+    ]) LOOP
+        EXECUTE format('DROP POLICY IF EXISTS "Allow all for %I" ON %I;', tbl, tbl);
+        EXECUTE format('CREATE POLICY "Allow all for %I" ON %I FOR ALL USING (true) WITH CHECK (true);', tbl, tbl);
+    END LOOP;
 END $$;

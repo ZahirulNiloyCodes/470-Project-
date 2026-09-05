@@ -65,36 +65,19 @@ export default function ChatMessage({
         {message.is_edited && <span className="text-xs text-zinc-500">(edited)</span>}
 
         {isOwner && (
-          <div className="ml-auto relative" ref={menuRef}>
+          <div className="ml-auto flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
-              onClick={() => setMenuOpen((prev) => !prev)}
-              className="opacity-0 group-hover:opacity-100 text-zinc-400 hover:text-white px-2 transition-opacity"
-              aria-label="Message options"
+              onClick={() => onEdit(message.id, message.content)}
+              className="text-xs text-zinc-400 hover:text-white px-2 py-0.5 rounded hover:bg-zinc-700 transition-colors"
             >
-              ⋯
+              Edit
             </button>
-            {menuOpen && (
-              <div className="absolute right-0 mt-1 w-28 bg-zinc-800 border border-zinc-700 rounded-md shadow-lg z-10 overflow-hidden">
-                <button
-                  onClick={() => {
-                    onEdit(message.id, message.content);
-                    setMenuOpen(false);
-                  }}
-                  className="w-full text-left px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-700"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => {
-                    onDelete(message.id);
-                    setMenuOpen(false);
-                  }}
-                  className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-zinc-700"
-                >
-                  Delete
-                </button>
-              </div>
-            )}
+            <button
+              onClick={() => onDelete(message.id)}
+              className="text-xs text-red-400 hover:text-red-300 px-2 py-0.5 rounded hover:bg-zinc-700 transition-colors"
+            >
+              Delete
+            </button>
           </div>
         )}
       </div>

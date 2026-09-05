@@ -57,11 +57,14 @@ async def screenshare_ws(websocket: WebSocket, room_id: str):
         screenshare_manager.disconnect(room_id, websocket)
 
         if participant_id:
-            ended_sessions = screenshare_controller.end_all_sessions_for_participant(
-                room_id, participant_id
-            )
-            for session in ended_sessions:
-                await screenshare_manager.broadcast(
-                    room_id,
-                    {"type": "stopped", "session": session, "participant_id": participant_id},
+            try:
+                ended_sessions = screenshare_controller.end_all_sessions_for_participant(
+                    room_id, participant_id
                 )
+                for session in ended_sessions:
+                    await screenshare_manager.broadcast(
+                        room_id,
+                        {"type": "stopped", "session": session, "participant_id": participant_id},
+                    )
+            except Exception:
+                pass

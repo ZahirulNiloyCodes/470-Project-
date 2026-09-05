@@ -17,8 +17,7 @@ def register_user(name: str, email: str, password: str) -> dict:
 
     password_hash = hash_password(password)
     user = user_model.create_user(name.strip(), email.lower().strip(), password_hash)
-    user.pop("password_hash", None)
-    return user
+    return {k: v for k, v in user.items() if k != "password_hash"}
 
 def login_user(email: str, password: str) -> dict:
     user = user_model.get_user_by_email(email.lower().strip())

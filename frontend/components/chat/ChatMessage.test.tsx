@@ -26,7 +26,11 @@ describe("ChatMessage", () => {
   it("renders code blocks using syntax highlighter", () => {
     const msg = { ...baseMessage, content: "```js\nconsole.log('hi')\n```" };
     render(<ChatMessage message={msg} currentUserId="u1" onEdit={vi.fn()} onDelete={vi.fn()} />);
-    expect(screen.getByText(/console\.log/)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        (_, el) => el?.tagName.toLowerCase() === "code" && (el?.textContent?.includes("console.log") ?? false)
+      )
+    ).toBeInTheDocument();
   });
 
   it("shows deleted placeholder when is_deleted is true", () => {

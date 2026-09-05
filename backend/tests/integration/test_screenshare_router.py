@@ -9,6 +9,15 @@ def client():
     return TestClient(app)
 
 
+@pytest.fixture(autouse=True)
+def mock_end_sessions(monkeypatch):
+    monkeypatch.setattr(
+        screenshare_controller,
+        "end_all_sessions_for_participant",
+        lambda room_id, participant_id: [],
+    )
+
+
 def test_get_token_endpoint(client, monkeypatch):
     monkeypatch.setattr(
         screenshare_controller,

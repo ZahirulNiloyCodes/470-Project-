@@ -35,7 +35,11 @@ async def qna_participant_ws(websocket: WebSocket, room_id: str):
                     )
                 except HTTPException as exc:
                     await websocket.send_json({"type": "error", "detail": exc.detail})
+                except Exception as exc:
+                    await websocket.send_json({"type": "error", "detail": str(exc)})
     except WebSocketDisconnect:
+        pass
+    finally:
         qna_manager.disconnect_participant(room_id, websocket)
 
 
@@ -62,4 +66,6 @@ async def qna_host_ws(websocket: WebSocket, room_id: str):
             except HTTPException as exc:
                 await websocket.send_json({"type": "error", "detail": exc.detail})
     except WebSocketDisconnect:
+        pass
+    finally:
         qna_manager.disconnect_host(room_id, websocket)

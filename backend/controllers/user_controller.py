@@ -18,8 +18,7 @@ def update_profile(user_id: str, name: Optional[str], password: Optional[str]) -
     if not updated:
         raise HTTPException(status_code=404, detail="User not found")
 
-    updated.pop("password_hash", None)
-    return updated
+    return {k: v for k, v in updated.items() if k != "password_hash"}
 
 
 def rate_peer(rater_id: str, peer_id: str, score: int) -> None:
