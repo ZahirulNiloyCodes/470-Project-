@@ -1,32 +1,52 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <title>EduStream Server Setup & Run Guide</title>
 <style>
   @page { margin: 20mm; size: A4; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #0f172a; line-height: 1.5; font-size: 13px; margin: 0; padding: 20px; }
-  h1 { color: #1e40af; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; font-size: 22px; margin-top: 0; }
-  h2 { color: #0f172a; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; font-size: 16px; margin-top: 24px; }
-  h3 { font-size: 14px; margin-top: 16px; color: #334155; }
-  pre { background-color: #0f172a; color: #f8fafc; padding: 12px; border-radius: 6px; font-family: "Courier New", Courier, monospace; font-size: 11px; overflow-x: auto; white-space: pre-wrap; word-break: break-all; }
-  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 12px; }
-  th, td { border: 1px solid #cbd5e1; padding: 8px; text-align: left; }
-  th { background-color: #f1f5f9; color: #1e293b; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #0f172a; line-height: 1.6; font-size: 13px; margin: 0; padding: 24px; background-color: #f8fafc; }
+  .container { max-width: 900px; margin: 0 auto; background: #ffffff; padding: 32px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; }
+  h1 { color: #1e40af; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; font-size: 24px; margin-top: 0; }
+  h2 { color: #0f172a; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; font-size: 16px; margin-top: 28px; }
+  h3 { font-size: 14px; margin-top: 18px; color: #334155; }
+  p { margin: 8px 0; }
+  pre { background-color: #0f172a; color: #f8fafc; padding: 14px; border-radius: 8px; font-family: "Courier New", Courier, monospace; font-size: 11.5px; overflow-x: auto; white-space: pre-wrap; word-break: break-all; }
+  code { font-family: "Courier New", Courier, monospace; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #0f172a; font-size: 12px; }
+  pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 12.5px; }
+  th, td { border: 1px solid #cbd5e1; padding: 10px; text-align: left; }
+  th { background-color: #f1f5f9; color: #1e293b; font-weight: 600; }
   .badge { display: inline-block; padding: 2px 8px; font-size: 11px; font-weight: bold; border-radius: 4px; background: #e0e7ff; color: #3730a3; }
+  .tip { background-color: #eff6ff; border-left: 4px solid #3b82f6; padding: 12px 16px; margin: 14px 0; border-radius: 0 8px 8px 0; font-size: 12.5px; }
+  .tip strong { color: #1e40af; }
 </style>
 </head>
 <body>
 
+<div class="container">
 <h1>🎓 EduStream — Complete Server Setup & Run Guide</h1>
-<p>Distributed Collaborative Learning Platform • <strong>FastAPI Backend</strong> + <strong>Next.js 14 Frontend</strong> + <strong>Supabase (PostgreSQL)</strong></p>
+<p>Distributed Collaborative Learning Platform • <strong>FastAPI (Python) Backend</strong> + <strong>Next.js 14 (TypeScript & Tailwind) Frontend</strong> + <strong>Supabase (PostgreSQL)</strong></p>
 
-<h2>1. Database Initialization (Supabase SQL)</h2>
-<p>Execute this in the <strong>Supabase SQL Editor</strong> once:</p>
+<div class="tip">
+  <strong>Member 1 Modules:</strong> FR1 (Study Rooms), FR5 (Shared Pomodoro), FR9 (AI Flashcards), FR13 (Peer Rating System).
+</div>
+
+<h2>1. Clone Repository from Git</h2>
+<pre>
+# Clone the repository onto your machine
+git clone https://github.com/ZahirulNiloyCodes/470-Project-.git
+
+# Navigate into the project root directory
+cd 470-Project-
+</pre>
+
+<h2>2. Database Initialization (Supabase SQL)</h2>
+<p>Open your <strong>Supabase Project Dashboard</strong> &rarr; <strong>SQL Editor</strong> &rarr; <strong>New Query</strong>, paste the following SQL, and click <strong>Run</strong>:</p>
 <pre>
 create extension if not exists "uuid-ossp";
 
--- Study Rooms (FR1)
+-- FR1: Study Rooms
 create table if not exists public.study_rooms (
     id uuid primary key default uuid_generate_v4(),
     title varchar(255) not null,
@@ -39,7 +59,7 @@ create table if not exists public.study_rooms (
     created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- Flashcard Decks (FR9)
+-- FR9: Flashcard Decks
 create table if not exists public.flashcard_decks (
     id uuid primary key default uuid_generate_v4(),
     room_id uuid references public.study_rooms(id) on delete set null,
@@ -49,7 +69,7 @@ create table if not exists public.flashcard_decks (
     created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- Peer Ratings (FR13)
+-- FR13: Peer Ratings
 create table if not exists public.peer_ratings (
     id uuid primary key default uuid_generate_v4(),
     room_id text not null,
@@ -63,6 +83,7 @@ create table if not exists public.peer_ratings (
     constraint unique_rater_ratee_room unique (room_id, rater_id, ratee_id)
 );
 
+-- Enable Row Level Security (RLS) & Policies
 alter table public.study_rooms enable row level security;
 alter table public.flashcard_decks enable row level security;
 alter table public.peer_ratings enable row level security;
@@ -71,77 +92,100 @@ create policy "Allow all flashcard_decks" on public.flashcard_decks for all usin
 create policy "Allow all peer_ratings" on public.peer_ratings for all using (true) with check (true);
 </pre>
 
-<h2>2. Backend Setup & Run (Terminal 1)</h2>
+<h2>3. Backend Setup & Run (Terminal 1)</h2>
+<p>Open your first terminal (PowerShell or Bash) and run:</p>
 <pre>
-# 1. Enter backend directory
+# 1. Enter the backend directory
 cd backend
 
-# 2. Create & activate Python virtual environment
-python -m venv venv || python3 -m venv venv
-source venv/Scripts/activate 2>/dev/null || source venv/bin/activate
+# 2. Create a Python virtual environment
+python -m venv venv
 
-# 3. Create .env configuration
-cat << 'ENVEOF' > .env
-SUPABASE_URL=https://eyihsstoroganbwsqaxw.supabase.co
+# 3. Activate the virtual environment
+# Windows PowerShell:
+.\venv\Scripts\Activate.ps1
+# (Or on macOS/Linux/Git Bash: source venv/bin/activate)
+
+# 4. Create your .env configuration file
+# Ensure you set your Supabase URL & Anon Key, and OpenAI API Key
+# Example backend/.env:
+SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_KEY=your_supabase_anon_key
 OPENAI_API_KEY=your_openai_api_key
 PORT=8000
-ENVEOF
+FRONTEND_URL=http://localhost:3000
 
-# 4. Install dependencies
+# 5. Install all backend dependencies
 pip install --upgrade pip
-pip install fastapi uvicorn supabase pydantic websockets python-dotenv httpx
+pip install -r requirements.txt
 
-# 5. Launch FastAPI server
+# 6. Launch the FastAPI server
 python -m uvicorn main:app --reload --port 8000
 </pre>
-<p><strong>Verification:</strong> Open <code>http://localhost:8000/docs</code> to access the Swagger UI.</p>
+<p><strong>Verification:</strong> Open <code>http://localhost:8000/docs</code> in your browser to view the interactive FastAPI Swagger UI.</p>
 
-<h2>3. Frontend Setup & Run (Terminal 2)</h2>
+<h2>4. Frontend Setup & Run (Terminal 2)</h2>
+<p>Open a second terminal window and run:</p>
 <pre>
-# 1. Enter frontend directory
+# 1. Enter the frontend directory
 cd frontend
 
-# 2. Create .env.local configuration
-cat << 'ENVEOF' > .env.local
+# 2. Create your .env.local configuration file
+# Example frontend/.env.local:
 NEXT_PUBLIC_API_URL=http://localhost:8000
 NEXT_PUBLIC_WS_URL=ws://localhost:8000
-ENVEOF
 
-# 3. Install npm dependencies & run
+# 3. Install frontend npm packages
+# Note on Windows: Use npm.cmd if PowerShell scripts are restricted
 npm install
+
+# 4. Launch the Next.js development server
 npm run dev
 </pre>
-<p><strong>Verification:</strong> Open <code>http://localhost:3000/demo</code> to view the full workspace.</p>
+<p><strong>Verification:</strong> Open <code>http://localhost:3000/demo</code> in your browser to view the integrated Member 1 testbed.</p>
 
-<h2>4. Feature Testing Walkthrough</h2>
+<h2>5. Running Unit & Integration Tests</h2>
+<p>To verify that all Member 1 modules and test suites pass:</p>
+<pre>
+# --- Backend Pytest Suite ---
+cd backend
+.\venv\Scripts\Activate.ps1
+pytest tests/unit/test_peer_rating_controller.py tests/unit/test_peer_rating_model.py tests/integration/test_peer_rating_router.py
+
+# --- Frontend Vitest Suite ---
+cd frontend
+npm test -- services/peerRatingService.test.ts --run
+</pre>
+
+<h2>6. Feature Testing Walkthrough</h2>
 <table>
   <tr>
-    <th>Module</th>
-    <th>Testing Action</th>
-    <th>Expected Result</th>
+    <th style="width: 25%;">Module</th>
+    <th style="width: 40%;">Testing Action</th>
+    <th style="width: 35%;">Expected Result</th>
   </tr>
   <tr>
     <td><strong>FR1: Study Rooms</strong></td>
-    <td>Click <em>"Create Study Room"</em>, fill in title & tags, submit.</td>
-    <td>Room card renders in the active list with tag badges.</td>
+    <td>Click <em>"Create Study Room"</em> on <code>/demo</code>, enter title, description & tags (e.g. <code>Operating Systems</code>), submit.</td>
+    <td>Room card renders in the active list with tag badges and persistence in Supabase.</td>
   </tr>
   <tr>
-    <td><strong>FR5: Pomodoro</strong></td>
-    <td>Open 2 browser windows side-by-side to <code>/demo</code>; click <em>"Start"</em>.</td>
-    <td>Both windows count down in real time over WebSockets.</td>
+    <td><strong>FR5: Pomodoro Clock</strong></td>
+    <td>Open 2 browser windows side-by-side to <code>/demo</code>; click <em>"Start"</em> on the host controls.</td>
+    <td>Both windows countdown in real time over bidirectional WebSockets (<code>/ws/pomodoro</code>).</td>
   </tr>
   <tr>
-    <td><strong>FR9: Flashcards</strong></td>
-    <td>Paste text notes & click <em>"Generate Flashcards with AI"</em>.</td>
-    <td>Interactive flip card deck renders with Next/Prev controls.</td>
+    <td><strong>FR9: AI Flashcards</strong></td>
+    <td>Paste lecture revision notes in the text box & click <em>"Generate Flashcards with AI"</em>.</td>
+    <td>AI automatically extracts concepts; an interactive 3D flip card deck renders with Next/Prev controls.</td>
   </tr>
   <tr>
     <td><strong>FR13: Peer Rating System</strong></td>
-    <td>Click <em>"Rate Session Peers"</em> or trigger session completion; select 1–5 stars and feedback for session participants.</td>
-    <td>Helpfulness rating is submitted, self-rating is prevented, and real-time reputation score card updates immediately.</td>
+    <td>Click <em>"Rate Session Peers"</em> or simulate session completion; select 1–5 stars and write feedback for a session peer.</td>
+    <td>Rating is saved, self-rating is rejected, and the <strong>Peer Helpfulness Reputation</strong> card updates live with scores and testimonials.</td>
   </tr>
 </table>
 
+</div>
 </body>
 </html>
