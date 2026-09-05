@@ -111,8 +111,9 @@ CREATE TABLE IF NOT EXISTS room_tasks (
 CREATE TABLE IF NOT EXISTS study_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id TEXT NOT NULL,
-    duration INT NOT NULL,
-    session_date DATE NOT NULL,
+    room_id TEXT,
+    duration_minutes INT NOT NULL DEFAULT 25,
+    session_date TIMESTAMPTZ DEFAULT NOW(),
     notes TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
