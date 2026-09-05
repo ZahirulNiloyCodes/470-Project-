@@ -18,29 +18,72 @@ export default function SharedPomodoro({
   const [isRunning, setIsRunning] = useState(false);
   const [mode, setMode] = useState("WORK");
   const ws = useRef<WebSocket | null>(null);
+  const localInterval = useRef<any>(null);
 
   useEffect(() => {
-    const wsUrl = `${process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000"}/ws/pomodoro/${roomId}`;
-    ws.current = new WebSocket(wsUrl);
+    try {
+      const wsUrl = `${process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000"}/ws/pomodoro/${roomId}`;
+      ws.current = new WebSocket(wsUrl);
 
-    ws.current.onmessage = (event) => {
-      const msg = JSON.parse(event.data);
-      if (msg.type === "SYNC_STATE" || msg.type === "TICK") {
-        setSeconds(msg.data.remaining_seconds);
-        setIsRunning(msg.data.is_running);
-        setMode(msg.data.mode);
-      } else if (msg.type === "FINISHED") {
-        setIsRunning(false);
-        onSessionFinished?.();
-      }
+      ws.current.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+        if (msg.type === "SYNC_STATE" || msg.type === "TICK") {
+          setSeconds(msg.data.remaining_seconds);
+          setIsRunning(msg.data.is_running);
+          setMode(msg.data.mode);
+        } else if (msg.type === "FINISHED") {
+          setIsRunning(false);
+          onSessionFinished?.();
+        }
+      };
+
+      ws.current.onerror = () => {
+        // Fallback to local timer
+      };
+    } catch {
+      // Backend offline
+    }
+
+    return () => {
+      ws.current?.close();
+      if (localInterval.current) clearInterval(localInterval.current);
     };
-
-    return () => ws.current?.close();
   }, [roomId, onSessionFinished]);
 
-  const sendAction = (action: string, payload = {}) => {
+  const sendAction = (action: string, payload: any = {}) => {
     if (ws.current?.readyState === WebSocket.OPEN) {
       ws.current.send(JSON.stringify({ action, ...payload }));
+      return;
+    }
+
+    // Local fallback when backend WebSocket is offline
+    if (action === "START") {
+      setIsRunning(true);
+      if (localInterval.current) clearInterval(localInterval.current);
+      localInterval.current = setInterval(() => {
+        setSeconds((prev) => {
+          if (prev <= 1) {
+            clearInterval(localInterval.current);
+            setIsRunning(false);
+            onSessionFinished?.();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else if (action === "PAUSE") {
+      setIsRunning(false);
+      if (localInterval.current) clearInterval(localInterval.current);
+    } else if (action === "RESET") {
+      setIsRunning(false);
+      if (localInterval.current) clearInterval(localInterval.current);
+      setSeconds(mode === "WORK" ? 25 * 60 : 5 * 60);
+    } else if (action === "SET_MODE") {
+      const newMode = payload.mode || "WORK";
+      setMode(newMode);
+      setIsRunning(false);
+      if (localInterval.current) clearInterval(localInterval.current);
+      setSeconds(newMode === "WORK" ? 25 * 60 : 5 * 60);
     }
   };
 
