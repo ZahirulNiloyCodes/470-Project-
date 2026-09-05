@@ -1,0 +1,5 @@
+import os
+
+LIVEKIT_API_KEY = os.environ["LIVEKIT_API_KEY"]
+LIVEKIT_API_SECRET = os.environ["LIVEKIT_API_SECRET"]
+LIVEKIT_URL = os.environ["LIVEKIT_URL"]
