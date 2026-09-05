@@ -1,16 +1,35 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import ResourceHubView from '@/views/ResourceHubView';
+import KanbanBoardView from '@/views/KanbanBoardView';
+import SessionLoggerView from '@/views/SessionLoggerView';
+import GlobalRoomSearchView from '@/views/GlobalRoomSearchView';
 
-export default function HomePage() {
+export default function Home() {
+  const dummyRoomId = "room-101";
+  const dummyUserId = "user-001";
+
   return (
-    <main className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 text-center">
-      <h1 className="text-3xl font-extrabold text-slate-900 mb-2">EduStream Platform</h1>
-      <p className="text-slate-600 mb-6 max-w-md">Collaborative Study Rooms, Shared Pomodoro, and AI Flashcards.</p>
-      <Link href="/demo">
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3">
-          Open Member 1 Workspace (/demo)
-        </Button>
-      </Link>
+    <main className="min-h-screen p-8 space-y-8 bg-background text-foreground">
+      <h1 className="text-3xl font-bold">EduStream Workspace</h1>
+      
+      <section className="border p-4 rounded-lg">
+        <h2 className="text-xl font-bold mb-2">Global Room Search (FR-15)</h2>
+        <GlobalRoomSearchView />
+      </section>
+
+      <section className="border p-4 rounded-lg">
+        <h2 className="text-xl font-bold mb-2">Resource Hub (FR-3)</h2>
+        <ResourceHubView roomId={dummyRoomId} userId={dummyUserId} />
+      </section>
+
+      <section className="border p-4 rounded-lg">
+        <h2 className="text-xl font-bold mb-2">Kanban Task Board (FR-7)</h2>
+        <KanbanBoardView roomId={dummyRoomId} />
+      </section>
+
+      <section className="border p-4 rounded-lg">
+        <h2 className="text-xl font-bold mb-2">Study Session Logger (FR-11)</h2>
+        <SessionLoggerView userId={dummyUserId} roomId={dummyRoomId} />
+      </section>
     </main>
   );
 }
