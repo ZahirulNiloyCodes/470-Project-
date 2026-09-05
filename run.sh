@@ -3,6 +3,7 @@ set -e
 
 echo "========================================================"
 echo "       Starting EduStream Collaborative Platform"
+echo "   Uniting Member 1, Member 2, and Member 3 Features"
 echo "========================================================"
 echo ""
 
@@ -16,8 +17,12 @@ fi
 
 if [ ! -f "frontend/.env.local" ]; then
     echo "[2/5] Creating frontend/.env.local..."
-    echo "NEXT_PUBLIC_API_URL=http://localhost:8000" > frontend/.env.local
-    echo "NEXT_PUBLIC_WS_URL=ws://localhost:8000" >> frontend/.env.local
+    if [ -f "frontend/.env.example" ]; then
+        cp frontend/.env.example frontend/.env.local
+    else
+        echo "NEXT_PUBLIC_API_URL=http://localhost:8000" > frontend/.env.local
+        echo "NEXT_PUBLIC_WS_URL=ws://localhost:8000" >> frontend/.env.local
+    fi
 else
     echo "[2/5] frontend/.env.local found."
 fi
@@ -39,7 +44,7 @@ fi
 
 # 4. Launch Servers
 echo "[5/5] Launching servers..."
-cd backend && ./venv/bin/uvicorn main:app --reload --host 0.0.0.0 --port 8000 &
+cd backend && ./venv/bin/python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000 &
 BACKEND_PID=$!
 cd ../frontend && npm run dev &
 FRONTEND_PID=$!
@@ -47,9 +52,11 @@ cd ..
 
 echo ""
 echo "========================================================"
-echo " All services running!"
-echo " Backend Docs: http://localhost:8000/docs"
-echo " Frontend UI:  http://localhost:3000/demo"
+echo " All services running successfully!"
+echo " Portal Home:    http://localhost:3000"
+echo " All Features:   http://localhost:3000/demo"
+echo " Live Room:      http://localhost:3000/rooms/room-1"
+echo " Backend Docs:   http://localhost:8000/docs"
 echo "========================================================"
 echo ""
 
@@ -57,9 +64,9 @@ sleep 4
 
 # Open browser
 if command -v xdg-open > /dev/null; then
-    xdg-open http://localhost:3000/demo
+    xdg-open http://localhost:3000
 elif command -v open > /dev/null; then
-    open http://localhost:3000/demo
+    open http://localhost:3000
 fi
 
 echo "Press Ctrl+C to stop all servers."

@@ -3,6 +3,7 @@ setlocal enabledelayedexpansion
 title EduStream - 1-Click Launcher
 echo ========================================================
 echo        Starting EduStream Collaborative Platform
+echo   Uniting Member 1, Member 2, and Member 3 Features
 echo ========================================================
 echo.
 
@@ -52,10 +53,14 @@ if not exist "backend\.env" (
 :: 4. Ensure frontend .env.local exists
 if not exist "frontend\.env.local" (
     echo [2/5] Creating frontend\.env.local...
-    (
-        echo NEXT_PUBLIC_API_URL=http://localhost:8000
-        echo NEXT_PUBLIC_WS_URL=ws://localhost:8000
-    ) > "frontend\.env.local"
+    if exist "frontend\.env.example" (
+        copy "frontend\.env.example" "frontend\.env.local" >nul
+    ) else (
+        (
+            echo NEXT_PUBLIC_API_URL=http://localhost:8000
+            echo NEXT_PUBLIC_WS_URL=ws://localhost:8000
+        ) > "frontend\.env.local"
+    )
 ) else (
     echo [2/5] frontend\.env.local found.
 )
@@ -78,18 +83,22 @@ if not exist "frontend\node_modules" (
 
 :: 7. Launch Servers (bound to 0.0.0.0 so local network devices can also access)
 echo [5/5] Launching servers...
-start "EduStream Backend (FastAPI)" cmd /k "cd backend && venv\Scripts\uvicorn.exe main:app --reload --host 0.0.0.0 --port 8000"
+start "EduStream Backend (FastAPI)" cmd /k "cd backend && venv\Scripts\python.exe -m uvicorn main:app --reload --host 0.0.0.0 --port 8000"
 start "EduStream Frontend (Next.js)" cmd /k "cd frontend && !NPM_CMD! run dev"
 
 echo.
 echo ========================================================
-echo  All services are launching!
-echo  Backend Docs: http://localhost:8000/docs
-echo  Frontend UI:  http://localhost:3000/demo
+echo  All services are launching successfully!
+echo.
+echo  Portal Home:    http://localhost:3000
+echo  All Features:   http://localhost:3000/demo
+echo  Live Room:      http://localhost:3000/rooms/room-1
+echo  Backend Docs:   http://localhost:8000/docs
 echo ========================================================
 echo.
-echo Opening EduStream Member 1 Workspace in your browser...
-timeout /t 6 >nul
-start http://localhost:3000/demo
+echo Opening EduStream in your default browser...
+timeout /t 5 >nul
+start http://localhost:3000
 
 exit
+

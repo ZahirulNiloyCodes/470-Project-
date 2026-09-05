@@ -29,7 +29,10 @@
 <p>Distributed Collaborative Learning Platform • <strong>FastAPI (Python) Backend</strong> + <strong>Next.js 14 (TypeScript & Tailwind) Frontend</strong> + <strong>Supabase (PostgreSQL)</strong></p>
 
 <div class="tip">
-  <strong>Member 1 Modules:</strong> FR1 (Study Rooms), FR5 (Shared Pomodoro), FR9 (AI Flashcards), FR13 (Peer Rating System).
+  <strong>Comprehensive 3-Member Teammate Suite:</strong><br>
+  • <strong>Member 1:</strong> FR1 (Study Rooms), FR5 (Shared Pomodoro), FR9 (AI Flashcards), FR13 (Peer Helpfulness Rating System).<br>
+  • <strong>Member 2:</strong> FR2 (Canvas Whiteboard), FR6 (Group Chat), FR10 (Anonymous Q&A), FR14 (Screen Share), User Auth & Dashboard.<br>
+  • <strong>Member 3:</strong> FR3 (Global Room Search), FR7 (Kanban Board), FR11 (Resource Hub), FR15 (Study Session Logger).
 </div>
 
 <h2>1. Clone Repository from Git</h2>
@@ -45,8 +48,8 @@ cd 470-Project-
   <h3 style="color: white; margin-top: 0; font-size: 18px;">⚡ 1-Click Instant Launch (No Terminal Needed!)</h3>
   <p style="margin: 6px 0; font-size: 13.5px;">You don't need to type terminal commands! Simply double-click the launcher script in Windows File Explorer:</p>
   <ul style="margin: 8px 0 12px 20px; padding: 0;">
-    <li><strong><code>run.bat</code></strong> (or <strong><code>start.bat</code></strong>): Automatically creates virtual environment, verifies dependencies, starts both FastAPI backend and Next.js frontend, and launches <strong>http://localhost:3000/demo</strong> in your browser!</li>
-    <li><strong><code>run_tests.bat</code></strong>: Double-click to execute all 38 backend and 11 frontend unit tests.</li>
+    <li><strong><code>run.bat</code></strong> (or <strong><code>start.bat</code></strong>): Automatically creates virtual environment, verifies dependencies, starts both FastAPI backend and Next.js frontend, and launches <strong>http://localhost:3000</strong> in your browser!</li>
+    <li><strong><code>run_tests.bat</code></strong>: Double-click to execute all 180 backend and 72 frontend unit tests (<strong>252 total tests passing 100%</strong>).</li>
     <li><strong><code>stop.bat</code></strong>: Double-click to cleanly terminate all background servers when finished.</li>
   </ul>
   <p style="margin: 0; font-size: 12px; opacity: 0.9;"><em>Note: The app comes with resilient built-in in-memory fallback stores and sample rooms & ratings, meaning it works 100% offline out-of-the-box even without Supabase credentials.</em></p>
@@ -219,7 +222,7 @@ echo "NEXT_PUBLIC_API_URL=http://localhost:8000" > .env.local
 npm install
 npm run dev
 </pre>
-<p><strong>Verification:</strong> Open <code>http://localhost:3000/demo</code> in your browser to access the Member 1 Workspace & Unified Room view!</p>
+<p><strong>Verification:</strong> Open <code>http://localhost:3000</code> in your browser to access the EduStream Main Portal or <code>http://localhost:3000/demo</code> for the interactive testing hub!</p>
 
 <h2>5. Running Unit & Integration Tests (252 Total Automated Tests)</h2>
 <p>You can run all 180 backend tests and 72 frontend tests with complete test coverage:</p>
@@ -231,29 +234,15 @@ cd backend && source venv/Scripts/activate && pytest tests
 # Windows PowerShell:
 cd backend; .\venv\Scripts\pytest.exe tests
 
-# --- Run Member 1 Backend Tests Only (38 passing tests) ---
-# Windows Git Bash:
-cd backend && source venv/Scripts/activate && pytest tests/member_1
-
-# Windows PowerShell:
-cd backend; .\venv\Scripts\pytest.exe tests/member_1
-
 # --- Run All Frontend Vitest Tests (72 passing tests) ---
 # Windows Git Bash:
 cd frontend && npm test
 
 # Windows PowerShell:
 cd frontend; npm.cmd test
-
-# --- Run Member 1 Frontend Tests Only (11 passing tests) ---
-# Windows Git Bash:
-cd frontend && npm run test:member1
-
-# Windows PowerShell:
-cd frontend; npm.cmd run test:member1
 </pre>
 
-<h2>6. Feature Testing Walkthrough (All Modules)</h2>
+<h2>6. Feature Testing Walkthrough (FR1 – FR15)</h2>
 <table>
   <tr>
     <th style="width: 25%;">Module</th>
@@ -263,7 +252,7 @@ cd frontend; npm.cmd run test:member1
   <tr>
     <td><strong>FR1: Study Rooms</strong></td>
     <td>Click <em>"Create Study Room"</em> on <code>/demo</code>, enter title & tags, submit.</td>
-    <td>Room card renders in active list with tag badges and room ID link to <code>/rooms/[roomId]</code>.</td>
+    <td>Room card renders in active list with tag badges and direct link into <code>/rooms/[roomId]</code>.</td>
   </tr>
   <tr>
     <td><strong>FR5: Pomodoro Clock</strong></td>
@@ -281,14 +270,49 @@ cd frontend; npm.cmd run test:member1
     <td>Rating is saved, self-rating is rejected, and <strong>Peer Helpfulness Reputation</strong> updates live.</td>
   </tr>
   <tr>
-    <td><strong>Member 2 Features</strong></td>
-    <td>Open <code>/rooms/[roomId]</code> and switch between <em>Whiteboard</em>, <em>Chat</em>, <em>Anonymous Q&A</em>, and <em>Screen Share</em> tabs.</td>
-    <td>Collaborative tldraw whiteboard, markdown chat with code highlighting, anonymous question queue, and LiveKit screen sharing.</td>
+    <td><strong>Member 2: Whiteboard (FR2)</strong></td>
+    <td>Open <code>/rooms/[roomId]</code> or <code>/rooms/[roomId]/canvas</code> and draw using pen/shapes.</td>
+    <td>Real-time collaborative canvas with stroke sync across connected peers.</td>
   </tr>
   <tr>
-    <td><strong>Member 3 Features</strong></td>
-    <td>Open <code>/rooms/[roomId]</code> and switch to <em>Kanban Tasks</em> and <em>Resources</em> tabs.</td>
-    <td>Add tasks across Todo, In Progress, Done columns; share and browse room study resources.</td>
+    <td><strong>Member 2: Live Chat (FR6)</strong></td>
+    <td>Open <code>/rooms/[roomId]/chat</code> and send text or markdown code snippets.</td>
+    <td>Instant WebSocket messaging with timestamps and author badges.</td>
+  </tr>
+  <tr>
+    <td><strong>Member 2: Q&A (FR10)</strong></td>
+    <td>Open <code>/rooms/[roomId]/qna</code>, post anonymous question, upvote.</td>
+    <td>Question displays in live queue; participants can upvote and hosts can resolve.</td>
+  </tr>
+  <tr>
+    <td><strong>Member 2: Screen Share (FR14)</strong></td>
+    <td>Open <code>/rooms/[roomId]/screenshare</code> and click <em>"Start Screen Share"</em>.</td>
+    <td>Browser prompts for screen/window capture and broadcasts stream.</td>
+  </tr>
+  <tr>
+    <td><strong>Member 2: Auth & Dashboard</strong></td>
+    <td>Visit <code>/login</code>, <code>/register</code>, and <code>/dashboard</code>.</td>
+    <td>Bcrypt password encryption, JWT tokens, and user profile management.</td>
+  </tr>
+  <tr>
+    <td><strong>Member 3: Room Search (FR3)</strong></td>
+    <td>On <code>/demo</code> (Member 3 tab), type search keyword or filter by tag.</td>
+    <td>Instant client & server search filter with direct <em>"Enter Room"</em> button.</td>
+  </tr>
+  <tr>
+    <td><strong>Member 3: Kanban Tasks (FR7)</strong></td>
+    <td>Open <code>/rooms/[roomId]</code> (Kanban tab) or <code>/demo</code>, add new task.</td>
+    <td>Optimistic task updates across Todo, In Progress, and Done stages.</td>
+  </tr>
+  <tr>
+    <td><strong>Member 3: Resource Hub (FR11)</strong></td>
+    <td>Open <code>/rooms/[roomId]</code> (Resources tab) or <code>/demo</code>, upload a link/file.</td>
+    <td>Resource cards with direct links and document type indicators.</td>
+  </tr>
+  <tr>
+    <td><strong>Member 3: Session Logger (FR15)</strong></td>
+    <td>On <code>/demo</code> (Member 3 tab), click <em>"Start Session"</em>, let it run, then <em>"Stop & Save"</em>.</td>
+    <td>Session timer logs time and dynamically adds record to study history table.</td>
   </tr>
 </table>
 
