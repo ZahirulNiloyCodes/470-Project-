@@ -1,19 +1,32 @@
-import type { Metadata } from "next";
-import "./globals.css";
+import { Geist, Geist_Mono } from "next/font/google"
 
-export const metadata: Metadata = {
-  title: "EduStream",
-  description: "Collaborative Study Platform",
-};
+import "./globals.css"
+import { ThemeProvider } from "@/components/theme-provider"
+
+const fontSans = Geist({
+  subsets: ["latin"],
+  variable: "--font-sans",
+})
+
+const fontMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+})
 
 export default function RootLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}: Readonly<{
+  children: React.ReactNode
+}>) {
   return (
-    <html lang="en">
-      <body className="bg-slate-50 text-slate-900 min-h-screen">{children}</body>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased`}
+    >
+      <body>
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
-  );
+  )
 }
